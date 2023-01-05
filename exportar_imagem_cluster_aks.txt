@@ -1,0 +1,40 @@
+1 - Acessar o nó do cluster:
+
+#LISTAR AS IMAGENS QUE ESTÃO EM CACHE:
+nerdctl images --namespace k8s.io
+Ou
+Crictl images | grep < imagem>
+
+#Salvar a imagem para a imagem compactada em .tar
+#docker
+docker save -o xxx.tar $imageList
+docker load -i  xxx.tar
+ou
+#containerd
+ctr -n=k8s.io image export  xxx.tar  $imageList
+ctr -n=k8s.io image import  xxx.tar
+ou 
+nerdctl save --namespace k8s.io docker.mj.gov.br/fabrica/sisetp/frontend:1.0.0-20221013.2 -o sisetpfrontend
+
+
+2 -Criar um pod com ssh server para transferir a imagem compactada em .tar
+  #imagem do caminho: docker.mj.gov.br/devops/tools/sshserver:latest:  
+  
+#Dockerfile:
+FROM ubuntu:latest
+RUN apt update && apt install wget openssh-server sudo -y
+RUN wget https://github.com/containerd/nerdctl/releases/download/v0.20.0/nerdctl-0.20.0-linux-amd64.tar.gz
+RUN tar zxvf nerdctl-0.20.0-linux-amd64.tar.gz -C /usr/local/bin/
+RUN alias n=nerdctl
+RUN useradd -rm -d /home/ubuntu -s /bin/bash -g root -G sudo -u 1000 test 
+RUN  echo 'test:test' | chpasswd
+RUN service ssh start
+EXPOSE 22
+CMD ["/usr/sbin/sshd","-D"]
+
+3 - Copiar o arquivo compactado para dentro do pod:
+  scp <nomedoarquivo> test@<ipdopod>:/tmp
+
+4-Transferir para uma outra maquina e realizar o import e o push:
+  docker import <nomedopacote> docker.mj.gov.br/fabrica/sisetp/frontend:latest
+docker push docker.mj.gov.br/fabrica/sisetp/frontend:latest
