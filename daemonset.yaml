@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: devops
+  namespace: enajusp-dsv
+  labels:
+    devops: teste
+spec:
+  selector:
+    matchLabels:
+      devops: teste
+  template:
+    metadata:
+      labels:
+        devops: teste
+    spec:
+      containers:
+      - name: busybox
+        image: busybox
+        command: ["sleep","infinity"]
+        volumeMounts:
+        - name: disk01
+          mountPath: /mnt/azure
+      #terminationGracePeriodSeconds: 30
+      volumes:
+      - name: disk01
+        persistentVolumeClaim:
+          claimName: pvc-eadsegen-moodle-dsv
