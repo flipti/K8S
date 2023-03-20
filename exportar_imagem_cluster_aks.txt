@@ -36,5 +36,7 @@ CMD ["/usr/sbin/sshd","-D"]
   scp <nomedoarquivo> test@<ipdopod>:/tmp
 
 4-Transferir para uma outra maquina e realizar o import e o push:
-  docker import <nomedopacote> docker.mj.gov.br/fabrica/sisetp/frontend:latest
+  docker load -i <nomedopacote>
+  
+  não usar docker import , usar docker load #docker import <nomedopacote> docker.mj.gov.br/fabrica/sisetp/frontend:latest
 docker push docker.mj.gov.br/fabrica/sisetp/frontend:latest
