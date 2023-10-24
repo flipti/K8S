@@ -1,0 +1,19 @@
+#referencia: https://cloud.google.com/kubernetes-engine/docs/how-to/internal-load-balancing?hl=pt-br
+# inserir a anotação networking.gke.io/load-balancer-type: "Internal" é a dica para disponibilizar um ip do cluster ao inves de um ip privado.
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    run: nginx
+  name: nginx
+  annotations:
+    networking.gke.io/load-balancer-type: "Internal"
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    run: nginx
+  type: LoadBalancer
