@@ -1,0 +1,31 @@
+# a linha "nginx.ingress.kubernetes.io/rewrite-target: /matrixg5/$2 " faz o redirect
+# a linha  "path: /integradormatrixg5(/|$)(.*)" faz a expressão regular.
+
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api-integrador-matrix-g5-app-2
+  namespace: db-apis-ms
+  labels:
+    app.kubernetes.io/instance: api-integrador-matrix-g5
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: app
+    helm.sh/chart: app-0.1.2
+  annotations:
+    meta.helm.sh/release-name: api-integrador-matrix-g5
+    meta.helm.sh/release-namespace: db-apis-ms
+    nginx.ingress.kubernetes.io/rewrite-target: /matrixg5/$2
+spec:
+  ingressClassName: nginx-int-ingress-ctrl-1
+  rules:
+    - host: api-bke-dev.diagnosticosdobrasil.com.br
+      http:
+        paths:
+          - path: /integradormatrixg5(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: api-integrador-matrix-g5-app
+                port:
+                  number: 80
