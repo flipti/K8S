@@ -1,0 +1,75 @@
+#INSTALAR DRIVER NO CLUSTER
+# https://github.com/kubernetes-csi/csi-driver-smb/tree/master/charts
+
+#helm repo add csi-driver-smb https://raw.githubusercontent.com/kubernetes-csi/csi-driver-smb/master/charts
+#helm install csi-driver-smb csi-driver-smb/csi-driver-smb --namespace kube-system --version v1.16.0
+
+
+apiVersion: v1
+data:
+  password: <crie a senha>
+  username: <crie o usuario>
+kind: Secret
+metadata:
+  name: smbcreds
+  namespace: default
+type: Opaque
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-smb
+  namespace: db-apis-ms
+spec:
+  capacity:
+    storage: 100Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+
+  csi:
+    driver: smb.csi.k8s.io
+    readOnly: true
+    volumeHandle: '1'
+    volumeAttributes:
+      source: "//10.198.141.10/sjp$"
+    nodeStageSecretRef:
+      name: smbcreds
+      namespace: default
+	  
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-smb
+  namespace: db-apis-ms
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Gi
+  volumeName: pv-smb
+  storageClassName: ''
+  
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: smb-pod
+  namespace: db-apis-ms
+spec:
+  containers:
+  - name: my-application
+    image: ubuntu
+    command: ["sleep", "infinity"]
+    volumeMounts:
+    - mountPath: "/mnt/data"
+      name: smb-volume
+  volumes:
+  - name: smb-volume
+    persistentVolumeClaim:
+      claimName: pvc-smb
