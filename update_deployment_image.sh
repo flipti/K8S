@@ -1,5 +1,7 @@
 # ESSE SCRIPT BAIXA A IMAGEM DE TODOS OS DEPLOYMENT DE UM NAMESPACE, ALTERA UM VALOR DE UM ARQUIVO APPSETINGS.JSON, GERA UMA NOVATAG DA IMAGEM, EXECUTA O PUSH, E SETA A NOVA IMAGEM NO DEPLOYMENT.
-
+# AUTENTICAR NO GCLOUD COM O JSON
+# EXEMPLO : docker login -u _json_key --password-stdin https://gcr.io < file.json
+# LISTA AS CREDENCIAL AUTENTICADA : gcloud auth list
 #!/bin/bash
 
 # Namespace e lista de deployments alvo
